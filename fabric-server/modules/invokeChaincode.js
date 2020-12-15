@@ -13,24 +13,23 @@ const invokeChaincode = async (
   username,
   org_name
 ) => {
-  logger.debug(util.format("invoke transaction on channel ${channelName}"));
+  logger.debug(util.format("invoke transaction on channel '%s'",channelName));
   let error_message = null;
   let tx_id_string = null;
   let client = null;
   let channel = null;
-  //   let endorsement_message = null;
-  //   let signatures_success = null;
-
   try {
     // first setup the client for this org
     client = await helper.getClientForOrg(org_name, username);
     logger.debug(
-      "Successfully got the fabric client for the organization ${org_name}"
+      "Successfully got the fabric client for the organization '%s'",
+      org_name
     );
     channel = client.getChannel(channelName);
     if (!channel) {
       let message = util.format(
-        "Channel ${channelName} was not defined in the connection profile"
+        "Channel '%s' was not defined in the connection profile",
+        channelName
       );
       logger.error(message);
       throw new Error(message);
@@ -57,43 +56,6 @@ const invokeChaincode = async (
     const proposalResponses = results[0];
     const proposal = results[1];
 
-    // var endorsements_success = [];
-    // var endorsements_failure = [];
-    // let proposalResponse = proposalResponses;
-    // if (Array.isArray(proposalResponses)) {
-    //   for (let i = 0; i < proposalResponses.length; i++) {
-    //     // make sure only take the valid responses to set on the consolidated response object
-    //     // to use in the transaction object
-    //     if (
-    //       proposalResponses[i].response &&
-    //       proposalResponses[i].response.status === 200
-    //     ) {
-    //       proposalResponse = proposalResponses[i];
-    //       endorsements_success.push(proposalResponse.endorsement);
-    //     } else {
-    //       proposalResponse = proposalResponses[i];
-    //       endorsements_failure.push(proposalResponse.endorsement);
-    //     }
-    //   }
-    // } else {
-    //   if (
-    //     proposalResponse &&
-    //     proposalResponse.response &&
-    //     proposalResponse.response.status === 200
-    //   ) {
-    //     endorsements_success.push(proposalResponse.endorsement);
-    //   } else {
-    //     endorsements_failure.push(proposalResponse.endorsement);
-    //   }
-    // }
-
-    // if (endorsements_success.length < 1) {
-    //   logger.error("sendTransaction - no valid endorsements found");
-    //   endorsement = util.format(
-    //     "sendTransaction - no valid endorsements found"
-    //   );
-    //   return Promise.reject(new Error("no valid endorsements found"));
-    // }
 
     // look at the responses to see if they are all are good
     // response will also include signatures required to be committed
@@ -124,12 +86,12 @@ const invokeChaincode = async (
     if (all_good) {
       logger.info(
         util.format(
-          "Successfully sent Proposal and received ProposalResponse: Status - ${proposalResponses[0].response.status}, message - ${proposalResponses[0].response.message}, metadata - ${proposalResponses[0].response.payload}"
+          "Successfully sent Proposal and received ProposalResponse: Status - '%s', message - '%s', metadata - '%s'",
+          proposalResponses[0].response.status,
+          proposalResponses[0].response.message,
+          proposalResponses[0].response.payload
         )
       );
-//      endorsement_message = util.format(
-//        "Successfully sent Proposal and received ProposalResponse: Status - ${proposalResponses[0].response.status,}, message - ${proposalResponses[0].response.message}"
-//      );
       // wait for the channel-based event hub to tell us
       // that the commit was good or bad on each peer in our organization
       const promises = [];
@@ -251,17 +213,6 @@ const invokeChaincode = async (
   } else {
     logger.info(message);
   }
-
-  //   let endorsers_success = [];
-  //   let signatures = [];
-  //   if (endorsements_success.length > 0) {
-  //     for (let i = 0; i < endorsements_success.length; i++) {
-  //       endorsers_success.push(
-  //         endorsements_success[i].endorser.toString("utf-8")
-  //       );
-  //       signatures.push(endorsements_success[i].signature.toString("utf-8"));
-  //     }
-  //   }
 
   // build a response to send back to the REST caller
   const response = {

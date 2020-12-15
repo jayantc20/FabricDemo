@@ -6,11 +6,17 @@ var userRoutes = require("./routes/userRoutes.js");
 var transactionRoutes = require("./routes/transactionRoutes.js");
 var cors = require("cors");
 var hfc = require("fabric-ca-client");
+const fileUpload = require('express-fileupload');
 
 require("./config.js");
 
 dotenv.config();
 const app = express();
+
+// enable files upload
+app.use(fileUpload({
+  createParentPath: true
+}));
 
 app.options("*", cors());
 app.use(cors());
@@ -24,7 +30,7 @@ app.use(express.json());
 //support parsing of application/x-www-form-urlencoded post data
 app.use(
   express.urlencoded({
-    extended: false,
+    extended: true,
   })
 );
 

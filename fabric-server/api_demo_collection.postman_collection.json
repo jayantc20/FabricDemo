@@ -50,7 +50,7 @@
 				"header": [
 					{
 						"key": "authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZpcnN0Iiwib3JnTmFtZSI6Im9yZzAiLCJpYXQiOjE2MDc5ODMzOTIsImV4cCI6MTYxMDU3NTM5Mn0.apQx3C0vJ-tJq0SXLq2YAm2wi5kpDhFztMalrDaVmQQ",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZpcnN0Iiwib3JnTmFtZSI6Im9yZzAiLCJpYXQiOjE2MDgwNzE3ODUsImV4cCI6MTYxMDY2Mzc4NX0.lbF7I3Rkxg3wVmBhJjXVVlf4cbtnoMeiZBQGDcPYks8",
 						"type": "text"
 					},
 					{
@@ -60,7 +60,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://127.0.0.1:4000/api/channels/demo/chaincodes/demo?peer=peer0.org0.example.com&fcn=queryAllFunction&args=[\"\"]",
+					"raw": "http://127.0.0.1:4000/api/channels/demo/chaincodes/proofofexistance?peer=peer0.org0.example.com&fcn=queryAllFunction&args=[\"\"]",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -74,7 +74,7 @@
 						"channels",
 						"demo",
 						"chaincodes",
-						"demo"
+						"proofofexistance"
 					],
 					"query": [
 						{
@@ -101,7 +101,7 @@
 				"header": [
 					{
 						"key": "authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZpcnN0Iiwib3JnTmFtZSI6Im9yZzAiLCJpYXQiOjE2MDc5ODMzOTIsImV4cCI6MTYxMDU3NTM5Mn0.apQx3C0vJ-tJq0SXLq2YAm2wi5kpDhFztMalrDaVmQQ",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZpcnN0Iiwib3JnTmFtZSI6Im9yZzAiLCJpYXQiOjE2MDgwNzE3ODUsImV4cCI6MTYxMDY2Mzc4NX0.lbF7I3Rkxg3wVmBhJjXVVlf4cbtnoMeiZBQGDcPYks8",
 						"type": "text"
 					},
 					{
@@ -111,7 +111,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://127.0.0.1:4000/api/channels/demo/chaincodes/demo?peer=peer0.org0.example.com&fcn=queryFunction&args=[\"1\"]",
+					"raw": "http://127.0.0.1:4000/api/channels/demo/chaincodes/proofofexistance?peer=peer0.org0.example.com&fcn=queryFunction&args=[\"1\"]",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -125,7 +125,7 @@
 						"channels",
 						"demo",
 						"chaincodes",
-						"demo"
+						"proofofexistance"
 					],
 					"query": [
 						{
@@ -152,21 +152,37 @@
 				"header": [
 					{
 						"key": "authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZpcnN0Iiwib3JnTmFtZSI6Im9yZzAiLCJpYXQiOjE2MDc5ODMzOTIsImV4cCI6MTYxMDU3NTM5Mn0.apQx3C0vJ-tJq0SXLq2YAm2wi5kpDhFztMalrDaVmQQ",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZpcnN0Iiwib3JnTmFtZSI6Im9yZzAiLCJpYXQiOjE2MDgwNzE3ODUsImV4cCI6MTYxMDY2Mzc4NX0.lbF7I3Rkxg3wVmBhJjXVVlf4cbtnoMeiZBQGDcPYks8",
 						"type": "text"
 					}
 				],
 				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"peers\" : [\"peer0.org0.example.com\"],\n    \"fcn\" : \"invokeFunction\",\n    \"args\" : [\"2\",\"amyHashString2\",\"{\\\"name\\\":\\\"file1\\\",\\\"date\\\":\\\"20-01-96\\\",\\\"edited\\\":\\\"15-12-20\\\"}\"]\n}"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "peers",
+							"value": "[\"peer0.org0.example.com\"]",
+							"type": "text"
+						},
+						{
+							"key": "fcn",
+							"value": "invokeFunction",
+							"type": "text"
+						},
+						{
+							"key": "args",
+							"value": "[\"1\"]",
+							"type": "text"
+						},
+						{
+							"key": "doc",
+							"type": "file",
+							"src": "/home/jayant/sample.txt"
+						}
+					]
 				},
 				"url": {
-					"raw": "http://127.0.0.1:4000/api/channels/demo/chaincodes/demo",
+					"raw": "http://127.0.0.1:4000/api/channels/demo/chaincodes/proofofexistance",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -180,7 +196,7 @@
 						"channels",
 						"demo",
 						"chaincodes",
-						"demo"
+						"proofofexistance"
 					]
 				}
 			},

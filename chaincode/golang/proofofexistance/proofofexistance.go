@@ -1,4 +1,3 @@
-
 package main
 
 /* Imports
@@ -9,6 +8,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	sc "github.com/hyperledger/fabric/protos/peer"
@@ -18,10 +18,11 @@ import (
 type SmartContract struct {
 }
 
-// Define the car structure, with 2 properties.  Structure tags are used by encoding/json library
+// Define the car structure, with 3 properties.  Structure tags are used by encoding/json library
 type File struct {
-	Hash   string `json:"hash"`
-	MetaData  string `json:"metadata"`
+	Hash     string `json:"hash"`
+	MetaData string `json:"metadata"`
+	Time     string `json:"time"`
 }
 
 /*
@@ -62,16 +63,20 @@ func (s *SmartContract) queryFunction(APIstub shim.ChaincodeStubInterface, args 
 	return shim.Success(queryAsBytes)
 }
 
-
 func (s *SmartContract) invokeFunction(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
 	if len(args) != 3 {
 		return shim.Error("Incorrect number of arguments. Expecting 3")
 	}
 
-	var file = File{Hash: args[1], MetaData: args[2]}
+	var file = File{Hash: args[1], MetaData: args[2], Time: time.Now().Format(time.RFC3339)}
 
 	fileAsBytes, _ := json.Marshal(file)
+
+	queryAsBytes, _ := APIstub.GetState(args[0])
+	if queryAsBytes != nil {
+		return shim.Error("Key Already Exists")
+	}
 	APIstub.PutState(args[0], fileAsBytes)
 
 	return shim.Success(nil)
@@ -119,7 +124,6 @@ func (s *SmartContract) queryAllFunction(APIstub shim.ChaincodeStubInterface) sc
 
 	return shim.Success(buffer.Bytes())
 }
-
 
 // The main function is only relevant in unit test mode. Only included here for completeness.
 func main() {
