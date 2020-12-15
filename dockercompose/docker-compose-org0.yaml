@@ -1,0 +1,161 @@
+version: '2'
+
+volumes:
+  peer0.org0.example.com:
+  peer1.org0.example.com:
+  peer2.org0.example.com:
+
+services:
+
+  ca.org0.example.com:
+    container_name: ca.org0.example.com
+    image: hyperledger/fabric-ca:1.4.4
+    restart: always
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.org0.example.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org0.example.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/server.key
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org0.example.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/server.key
+    ports:
+      - 7054:7054
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ${PWD}/../FabricDemo/artifacts/crypto-config/peerOrganizations/org0.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ${PWD}/../FabricDemo/artifacts/fabric-ca-server-org0.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+
+  peer0.org0.example.com:
+    container_name: peer0.org0.example.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.org0.example.com
+      - CORE_PEER_LOCALMSPID=org0MSP
+      - CORE_PEER_ADDRESS=peer0.org0.example.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org0.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org0.example.com:7051
+    ports:
+      - 7051:7051
+    volumes:
+      - ${PWD}/../FabricDemo/artifacts/crypto-config/peerOrganizations/org0.example.com/peers/peer0.org0.example.com/:/etc/hyperledger/crypto/peer
+      - peer0.org0.example.com:/var/hyperledger/production
+    depends_on:
+      - ca.org0.example.com
+      - couchdb.org0.example.com
+
+  peer1.org0.example.com:
+    container_name: peer1.org0.example.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.org0.example.com
+      - CORE_PEER_LOCALMSPID=org0MSP
+      - CORE_PEER_ADDRESS=peer1.org0.example.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org0.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org0.example.com:7051
+    ports:
+      - 7056:7051
+    volumes:
+      - ${PWD}/../FabricDemo/artifacts/crypto-config/peerOrganizations/org0.example.com/peers/peer1.org0.example.com/:/etc/hyperledger/crypto/peer
+      - peer1.org0.example.com:/var/hyperledger/production
+    depends_on:
+      - ca.org0.example.com
+      - couchdb1.org0.example.com
+
+  peer2.org0.example.com:
+    container_name: peer2.org0.example.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer2.org0.example.com
+      - CORE_PEER_LOCALMSPID=org0MSP
+      - CORE_PEER_ADDRESS=peer2.org0.example.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org0.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.org0.example.com:7051
+    ports:
+      - 7058:7051
+    volumes:
+      - ${PWD}/../FabricDemo/artifacts/crypto-config/peerOrganizations/org0.example.com/peers/peer2.org0.example.com/:/etc/hyperledger/crypto/peer
+      - peer2.org0.example.com:/var/hyperledger/production
+    depends_on:
+      - ca.org0.example.com
+      - couchdb2.org0.example.com
+
+  cli.example.com:
+    container_name: cli.example.com
+    extends:
+      file: base.yaml
+      service: cli-base
+    environment:
+      - CORE_PEER_LOCALMSPID=OrdererMSP
+    volumes:
+      - ${PWD}/../FabricDemo/artifacts/crypto-config/ordererOrganizations/example.com/users/Admin@example.com:/etc/hyperledger/crypto/peer
+      - ${PWD}/../FabricDemo/artifacts/crypto-config/ordererOrganizations/example.com/orderers/orderer0.example.com/tls:/etc/hyperledger/crypto/orderer/tls
+
+  cli.org0.example.com:
+    container_name: cli.org0.example.com
+    extends:
+      service: cli.example.com
+    environment:
+      - CORE_PEER_LOCALMSPID=org0MSP
+      - CORE_PEER_ADDRESS=peer0.org0.example.com:7051
+    dns_search: .
+    volumes:
+      - ${PWD}/../FabricDemo/artifacts/crypto-config/peerOrganizations/org0.example.com/users/Admin@org0.example.com:/etc/hyperledger/crypto/peer
+
+  cliNoCryptoVolume.org0.example.com:
+    container_name: cliNoCryptoVolume.org0.example.com
+    extends:
+      file: base.yaml
+      service: cli-base
+    environment:
+      - CORE_PEER_LOCALMSPID=org0MSP
+    extra_hosts:
+      - orderer0.example.com:127.0.0.1
+
+  couchdb.org0.example.com:
+    container_name: couchdb.org0.example.com
+    image: hyperledger/fabric-couchdb:0.4.15
+    restart: always
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+#    environment:
+#      - COUCHDB_USER=
+#      - COUCHDB_PASSWORD=
+    # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+    # for example map it to utilize Fauxton User Interface in dev environments.
+    ports:
+      - 5984:5984
+
+  couchdb1.org0.example.com:
+    container_name: couchdb1.org0.example.com
+    image: hyperledger/fabric-couchdb:0.4.15
+    restart: always
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+#    environment:
+#      - COUCHDB_USER=
+#      - COUCHDB_PASSWORD=
+    # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+    # for example map it to utilize Fauxton User Interface in dev environments.
+    ports:
+      - 6984:5984
+
+  couchdb2.org0.example.com:
+    container_name: couchdb2.org0.example.com
+    image: hyperledger/fabric-couchdb:0.4.15
+    restart: always
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+#    environment:
+#      - COUCHDB_USER=
+#      - COUCHDB_PASSWORD=
+    # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+    # for example map it to utilize Fauxton User Interface in dev environments.
+    ports:
+      - 7984:5984

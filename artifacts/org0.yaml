@@ -1,0 +1,11 @@
+---
+name: "network-org0"
+x-type: "hlfv1"
+description: "network - client definition for org0"
+version: "1.0"
+client:
+  organization: org0
+  credentialStore:
+    path: "./fabric-client-kv-org0"
+    cryptoStore:
+      path: "/tmp/fabric-client-kv-org0"

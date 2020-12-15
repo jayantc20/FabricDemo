@@ -1,0 +1,82 @@
+---
+name: "configuration file"
+x-type: "hlfv1"
+description: "The network"
+version: "1.0.0"
+channels:
+  demo:
+    orderers:
+      - orderer0.example.com
+    peers:
+      peer0.org0.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+      peer1.org0.example.com:
+        endorsingPeer: false
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: false
+        
+      peer2.org0.example.com:
+        endorsingPeer: false
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: false
+
+
+orderers:
+  orderer0.example.com:
+    url: grpcs://127.0.0.1:7050
+    grpcOptions:
+       ssl-target-name-override: orderer0.example.com
+    tlsCACerts:
+       path: ../artifacts/crypto-config/ordererOrganizations/example.com/orderers/orderer0.example.com/tls/ca.crt
+
+organizations:
+  org0:
+    mspid: org0MSP
+    peers:
+      - peer0.org0.example.com
+      - peer1.org0.example.com
+      - peer2.org0.example.com
+    certificateAuthorities:
+      - ca.org0.example.com
+    adminPrivateKey:
+      path: ../artifacts/crypto-config/peerOrganizations/org0.example.com/users/Admin@org0.example.com/msp/keystore/b736bae8eaf9254073b137c0e687d54316799db3d524f54c6c3fcfec82a834f3_sk
+    signedCert:
+      path: ../artifacts/crypto-config/peerOrganizations/org0.example.com/users/Admin@org0.example.com/msp/signcerts/Admin@org0.example.com-cert.pem
+
+peers:
+  peer0.org0.example.com:
+    url: grpcs://127.0.0.1:7051
+    grpcOptions:
+      ssl-target-name-override: peer0.org0.example.com
+    tlsCACerts:
+      path: ../artifacts/crypto-config/peerOrganizations/org0.example.com/peers/peer0.org0.example.com/tls/ca.crt
+
+  peer1.org0.example.com:
+    url: grpcs://127.0.0.1:7056
+    grpcOptions:
+      ssl-target-name-override: peer1.org0.example.com
+    tlsCACerts:
+      path: ../artifacts/crypto-config/peerOrganizations/org0.example.com/peers/peer1.org0.example.com/tls/ca.crt
+      
+  peer2.org0.example.com:
+    url: grpcs://127.0.0.1:7058
+    grpcOptions:
+      ssl-target-name-override: peer2.org0.example.com
+    tlsCACerts:
+      path: ../artifacts/crypto-config/peerOrganizations/org0.example.com/peers/peer2.org0.example.com/tls/ca.crt
+
+
+certificateAuthorities:
+  ca.org0.example.com:
+    url: https://127.0.0.1:7054
+    httpOptions:
+      verify: false
+    tlsCACerts: 
+      path: ../artifacts/crypto-config/peerOrganizations/org0.example.com/ca/ca.org0.example.com-cert.pem
+    caName: ca.org0.example.com
