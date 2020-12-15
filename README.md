@@ -4,11 +4,13 @@ Hyperledger Fabric Demo v1.4.4 with Fabric Node Sdk v1.4
 
 Please make sure to install all the Pre-requisite
 
+```
 Docker
 Docker Compose
 Golang
 Nodejs
 NPM
+```
 
 
 Network Consists of...
