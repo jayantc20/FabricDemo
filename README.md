@@ -1,4 +1,4 @@
-# FabricDemo
+# Fabric ProofOfExistance Demo of File
 
 Hyperledger Fabric Demo v1.4.4 with Fabric Node Sdk v1.4
 
@@ -10,6 +10,14 @@ Golang
 Nodejs
 NPM
 
+
+Network Consists of...
+```
+1 Organization
+3 Peers
+3 CouchDB
+1 CA
+```
 To Start the network..
 
 ```
@@ -31,7 +39,7 @@ docker exec -it cli.org0.example.com bash
 Install Chaincode..
 ```
 export CORE_PEER_ADDRESS=peer0.org0.example.com:7051
-peer chaincode install -n demo -v 1.0 -p demo -l golang
+peer chaincode install -n proofofexistance -v 1.0 -p proofofexistance -l golang
 ```
 
 
@@ -50,7 +58,7 @@ peer channel join -b demo.block
 Instantiate Chaincode .. 
 
 ```
-peer chaincode instantiate -n demo -v 1.0 -c '{"Args":["init"]}' -o orderer0.example.com:7050 -C demo --tls --cafile /etc/hyperledger/artifacts/crypto-config/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
+peer chaincode instantiate -n proofofexistance -v 1.0 -c '{"Args":["init"]}' -o orderer0.example.com:7050 -C demo --tls --cafile /etc/hyperledger/artifacts/crypto-config/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
 ```
 
 To Stop the network..
